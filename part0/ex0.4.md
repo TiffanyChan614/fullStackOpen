@@ -1,11 +1,11 @@
-Situation: Where the user creates a new note on the page https://studies.cs.helsinki.fi/exampleapp/notes
-by writing something into the text field and clicking the submit button
+Situation: Where the user creates a new note on the page https://studies.cs.helsinki.fi/exampleapp/notes by writing something into the text field and clicking the submit button
 
 ---
 
 sequenceDiagram
-participant browser
-participant server
+
+    participant browser
+    participant server
 
     Note right of browser: User submit a new note
 

@@ -3,8 +3,9 @@ Situation: where the user creates a new note using the single-page version of th
 ---
 
 sequenceDiagram
-participant browser
-participant server
+
+    participant browser
+    participant server
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa
     activate server
