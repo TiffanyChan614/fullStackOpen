@@ -3,6 +3,7 @@ import Filter from './components/Filter'
 import AddForm from './components/AddForm'
 import Numbers from './components/Numbers'
 import phonebookService from './services/phonebook'
+import Notification from './components/Notification'
 
 const App = () => {
 	const [persons, setPersons] = useState([])
@@ -10,6 +11,7 @@ const App = () => {
 	const [newNumber, setNewNumber] = useState('')
 	const [search, setSearch] = useState('')
 	const [shownPersons, setShownPersons] = useState(persons)
+	const [message, setMessage] = useState({ text: null, status: null })
 
 	useEffect(() => {
 		phonebookService.getAll().then((initialPersons) => {
@@ -66,6 +68,10 @@ const App = () => {
 						setPersons(newPersons)
 						updateShownPersons('', newPersons)
 					})
+				setMessage({
+					text: `Updated ${newName}'s contact`,
+					status: 1,
+				})
 			}
 		} else {
 			const personObject = {
@@ -76,6 +82,7 @@ const App = () => {
 				setPersons(persons.concat(returnPerson))
 				updateShownPersons('', persons.concat(returnPerson))
 			})
+			setMessage({ text: `Added ${newName}`, status: 1 })
 		}
 		setNewName('')
 		setNewNumber('')
@@ -86,13 +93,22 @@ const App = () => {
 		const personToDelete = persons.find((person) => person.id === id)
 		if (personToDelete) {
 			if (window.confirm(`Delete ${personToDelete.name}?`)) {
-				phonebookService.deleteContact(personToDelete.id).then(() => {
-					const newPersons = persons.filter(
-						(person) => person.id !== personToDelete.id
+				phonebookService
+					.deleteContact(personToDelete.id)
+					.then(() => {
+						const newPersons = persons.filter(
+							(person) => person.id !== personToDelete.id
+						)
+						setPersons(newPersons)
+						updateShownPersons(search, newPersons)
+						setMessage({ text: `Deleted ${personToDelete.name}`, status: 1 })
+					})
+					.catch(() =>
+						setMessage({
+							text: `Information of ${personToDelete.name} has already been removed from server`,
+							status: 0,
+						})
 					)
-					setPersons(newPersons)
-					updateShownPersons(search, newPersons)
-				})
 			}
 		}
 	}
@@ -101,6 +117,10 @@ const App = () => {
 		<div>
 			<div>
 				<h2>Phonebook</h2>
+				<Notification
+					text={message.text}
+					status={message.status}
+				/>
 				<Filter
 					searchValue={search}
 					handleInput={handleChangeSearch}
