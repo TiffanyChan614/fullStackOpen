@@ -10,15 +10,20 @@ const App = () => {
 	const [newName, setNewName] = useState('')
 	const [newNumber, setNewNumber] = useState('')
 	const [search, setSearch] = useState('')
-	const [shownPersons, setShownPersons] = useState(persons)
 	const [message, setMessage] = useState({ text: null, status: null })
 
 	useEffect(() => {
-		phonebookService.getAll().then((initialPersons) => {
-			setPersons(initialPersons)
-			updateShownPersons('', initialPersons)
-		})
+		phonebookService
+			.getAll()
+			.then((initialPersons) => {
+				setPersons(initialPersons)
+			})
+			.catch((error) => console.log(error))
 	}, [])
+
+	const shownPersons = persons.filter((person) =>
+		person.name.toLowerCase().includes(search.toLowerCase())
+	)
 
 	const handleChangeName = (event) => {
 		setNewName(event.target.value)
@@ -28,27 +33,16 @@ const App = () => {
 		setNewNumber(event.target.value)
 	}
 
-	const updateShownPersons = (searchValue, personsToShow) => {
-		if (searchValue) {
-			setShownPersons(
-				personsToShow.filter((person) =>
-					person.name.toLowerCase().includes(searchValue.toLowerCase())
-				)
-			)
-		} else {
-			setShownPersons(personsToShow)
-		}
-	}
-
 	const handleChangeSearch = (event) => {
 		const searchValue = event.target.value
 		setSearch(searchValue)
-		updateShownPersons(searchValue, persons)
 	}
 
 	const addPerson = (event) => {
 		event.preventDefault()
-		const personToUpdate = persons.find((person) => person.name === newName)
+		const personToUpdate = persons.find(
+			(person) => person.name.toLowerCase() === newName.toLowerCase()
+		)
 		if (personToUpdate) {
 			if (
 				window.confirm(
@@ -66,7 +60,6 @@ const App = () => {
 							.filter((person) => person.name !== personToUpdate.name)
 							.concat(returnPerson)
 						setPersons(newPersons)
-						updateShownPersons('', newPersons)
 					})
 				setMessage({
 					text: `Updated ${newName}'s contact`,
@@ -80,7 +73,6 @@ const App = () => {
 			}
 			phonebookService.create(personObject).then((returnPerson) => {
 				setPersons(persons.concat(returnPerson))
-				updateShownPersons('', persons.concat(returnPerson))
 			})
 			setMessage({ text: `Added ${newName}`, status: 1 })
 		}
@@ -100,7 +92,7 @@ const App = () => {
 							(person) => person.id !== personToDelete.id
 						)
 						setPersons(newPersons)
-						updateShownPersons(search, newPersons)
+						setSearch('')
 						setMessage({ text: `Deleted ${personToDelete.name}`, status: 1 })
 					})
 					.catch(() =>
