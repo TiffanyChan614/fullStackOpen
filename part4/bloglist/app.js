@@ -3,11 +3,12 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 const config = require('./utils/config')
+const logger = require('./utils/logger')
 const Blog = require('./models/blog')
 
 mongoose.connect(config.MONGODB_URL)
 
-console.log('connected to MongoDB')
+logger.info('connected to MongoDB')
 
 app.use(cors())
 app.use(express.json())
