@@ -47,8 +47,8 @@ describe('addition of a new note', () => {
     const getResponse = await api.get('/api/blogs')
     expect(getResponse.body).toHaveLength(helper.initialBlogs.length + 1)
 
-    const contents = getResponse.body.map((r) => r.title)
-    expect(contents).toContainEqual(helper.singleTestBlog.title)
+    const titles = getResponse.body.map((r) => r.title)
+    expect(titles).toContainEqual(helper.singleTestBlog.title)
   })
 
   test('blog without likes are updated successfully with likes defaulted to 0', async () => {
@@ -83,8 +83,8 @@ describe('deletion of a blog', () => {
       .catch((error) => console.log(error))
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
-    const blogIds = blogsAtEnd.map((blog) => blog.id)
-    expect(blogIds).not.toContainEqual(blogToDelete.id)
+    const blogTitles = blogsAtEnd.map((blog) => blog.title)
+    expect(blogTitles).not.toContainEqual(blogToDelete.title)
   }, 100000)
 
   test('fails with status code 404 if id does not exist', async () => {
@@ -109,7 +109,7 @@ describe('update of a blog', () => {
 
     const blogsAtEnd = await helper.blogsInDb()
     const updatedBlogAtEnd = blogsAtEnd.find(
-      (blog) => blog.id === blogToUpdate.id
+      (blog) => blog.title === blogToUpdate.title
     )
     expect(updatedBlogAtEnd.likes).toBe(updatedBlog.likes)
   })
