@@ -71,10 +71,17 @@ const App = () => {
 				name: newName,
 				number: newNumber,
 			}
-			phonebookService.create(personObject).then((returnPerson) => {
-				setPersons(persons.concat(returnPerson))
-			})
-			setMessage({ text: `Added ${newName}`, status: 1 })
+
+			phonebookService
+				.create(personObject)
+				.then((returnPerson) => {
+					setPersons(persons.concat(returnPerson))
+					setMessage({ text: `Added ${newName}`, status: 1 })
+				})
+				.catch((error) => {
+					console.log(error.response.data.error)
+					setMessage({ text: error.response.data.error, status: 0 })
+				})
 		}
 		setNewName('')
 		setNewNumber('')
