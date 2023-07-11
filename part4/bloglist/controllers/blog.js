@@ -1,25 +1,22 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const jwt = require('jsonwebtoken')
 
 blogRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('user')
-  response.json(blogs)
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+  return response.json(blogs.map((blog) => blog.toJSON()))
 })
 
 blogRouter.post('/', async (request, response) => {
   const body = request.body
+  const user = request.user
 
   if (!body.title || !body.url) {
-    response.status(400).end()
+    return response.status(400).json({ error: 'title or url missing' })
   }
 
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
+  if (!user) {
     return response.status(401).json({ error: 'token invalid' })
   }
-  const user = await User.findById(decodedToken.id)
 
   const blog = new Blog({
     ...body,
@@ -30,16 +27,33 @@ blogRouter.post('/', async (request, response) => {
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
-  response.status(201).json(savedBlog)
+  return response.status(201).json(savedBlog)
 })
 
 blogRouter.delete('/:id', async (request, response) => {
-  const result = await Blog.findByIdAndRemove(request.params.id)
-  if (!result) {
-    response.status(404).end()
-  } else {
-    response.status(204).end()
+  const user = request.user
+
+  if (!request.user) {
+    return response.status(401).json({ error: 'token invalid' })
   }
+
+  const result = await Blog.findByIdAndRemove(request.params.id)
+
+  if (!result) {
+    return response.status(404).end()
+  }
+
+  if (user.id.toString() !== result.user.toString()) {
+    return response
+      .status(401)
+      .json({ error: 'blog can only be deleted by the user who created it' })
+  }
+
+  user.blogs = user.blogs.filter(
+    (blog) => blog.id.toString() !== result.id.toString()
+  )
+  await user.save()
+  return response.status(204).end()
 })
 
 blogRouter.put('/:id', async (request, response) => {
@@ -57,11 +71,11 @@ blogRouter.put('/:id', async (request, response) => {
   })
 
   if (!updatedBlog) {
-    response.status(404).end()
+    return response.status(404).end()
   } else if (!blog.title || !blog.url) {
-    response.status(400).end()
+    return response.status(400).end()
   } else {
-    response.json(updatedBlog)
+    return response.json(updatedBlog)
   }
 })
 
