@@ -46,8 +46,6 @@ const App = () => {
         username,
         password,
       })
-      console.log('user in app', user)
-      console.log('user.token in app', user.token)
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)

@@ -1,7 +1,14 @@
 describe('Blog app', function () {
   beforeEach(function () {
-    cy.request('POST', 'http://localhost:3003/api/testing/reset')
-    cy.visit('http://localhost:3000')
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
+    cy.visit('')
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
+    const user = {
+      name: 'Matti Luukkainen',
+      username: 'mluukkai',
+      password: 'salainen',
+    }
+    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user)
   })
 
   it('login form is shown', function () {
@@ -13,16 +20,6 @@ describe('Blog app', function () {
   })
 
   describe('Login', function () {
-    beforeEach(function () {
-      cy.request('POST', 'http://localhost:3003/api/testing/reset')
-      const user = {
-        name: 'Matti Luukkainen',
-        username: 'mluukkai',
-        password: 'salainen',
-      }
-      cy.request('POST', 'http://localhost:3003/api/users/', user)
-      cy.visit('http://localhost:3000')
-    })
     it('succeeds with correct credentials', function () {
       cy.get('#username').type('mluukkai')
       cy.get('#password').type('salainen')
@@ -40,22 +37,9 @@ describe('Blog app', function () {
     })
   })
 
-  describe.only('When logged in', function () {
+  describe('When logged in', function () {
     beforeEach(function () {
-      cy.request('POST', 'http://localhost:3003/api/testing/reset')
-      const user = {
-        name: 'Matti Luukkainen',
-        username: 'mluukkai',
-        password: 'salainen',
-      }
-      cy.request('POST', 'http://localhost:3003/api/users/', user)
-      cy.request('POST', 'http://localhost:3003/api/login/', {
-        username: 'mluukkai',
-        password: 'salainen',
-      }).then((response) => {
-        localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
-        cy.visit('http://localhost:3000')
-      })
+      cy.login({ username: 'mluukkai', password: 'salainen' })
     })
 
     it('A blog can be created', function () {
