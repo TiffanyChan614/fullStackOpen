@@ -39,4 +39,34 @@ describe('Blog app', function () {
       cy.get('.notification').contains('Wrong username or password')
     })
   })
+
+  describe.only('When logged in', function () {
+    beforeEach(function () {
+      cy.request('POST', 'http://localhost:3003/api/testing/reset')
+      const user = {
+        name: 'Matti Luukkainen',
+        username: 'mluukkai',
+        password: 'salainen',
+      }
+      cy.request('POST', 'http://localhost:3003/api/users/', user)
+      cy.request('POST', 'http://localhost:3003/api/login/', {
+        username: 'mluukkai',
+        password: 'salainen',
+      }).then((response) => {
+        localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
+        cy.visit('http://localhost:3000')
+      })
+    })
+
+    it('A blog can be created', function () {
+      cy.contains('New blog').click()
+      cy.get('#title').type('Test title')
+      cy.get('#author').type('Test author')
+      cy.get('#url').type('Test url')
+      cy.get('#likes').type('0')
+      cy.get('#create').click()
+
+      cy.contains('Test title')
+    })
+  })
 })

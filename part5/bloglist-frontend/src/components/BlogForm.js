@@ -8,6 +8,7 @@ const BlogForm = ({ blogs, setBlogs, setMessageInfo }) => {
     author: '',
     url: '',
     likes: 0,
+    user: null,
   })
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
@@ -25,7 +26,7 @@ const BlogForm = ({ blogs, setBlogs, setMessageInfo }) => {
     try {
       const returnedBlog = await blogService.create(newBlog)
       setBlogs(blogs.concat(returnedBlog))
-      setNewBlog({ title: '', author: '', url: '', likes: 0 })
+      setNewBlog({ title: '', author: '', url: '', likes: 0, user: null })
       setMessageInfo({
         message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
         status: 'success',
@@ -53,6 +54,7 @@ const BlogForm = ({ blogs, setBlogs, setMessageInfo }) => {
           <div>
             title:{' '}
             <input
+              id='title'
               type='text'
               name='title'
               value={newBlog.title}
@@ -62,6 +64,7 @@ const BlogForm = ({ blogs, setBlogs, setMessageInfo }) => {
           <div>
             author:{' '}
             <input
+              id='author'
               type='text'
               name='author'
               value={newBlog.author}
@@ -71,6 +74,7 @@ const BlogForm = ({ blogs, setBlogs, setMessageInfo }) => {
           <div>
             url:{' '}
             <input
+              id='url'
               type='text'
               name='url'
               value={newBlog.url}
@@ -80,13 +84,18 @@ const BlogForm = ({ blogs, setBlogs, setMessageInfo }) => {
           <div>
             likes:{' '}
             <input
+              id='likes'
               type='number'
               name='likes'
               value={newBlog.likes}
               onChange={handleBlogChange}
             />
           </div>
-          <button type='submit'>create</button>
+          <button
+            type='submit'
+            id='create'>
+            create
+          </button>
           <button
             type='button'
             onClick={() => setBlogFormVisible(false)}>
