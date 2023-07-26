@@ -82,7 +82,7 @@ const App = () => {
       )}
       {user !== null && (
         <p>
-          {user.username} logged in
+          {user.name} logged in
           <button onClick={handleLogout}>logout</button>
         </p>
       )}
