@@ -58,7 +58,7 @@ describe('Blog app', function () {
       cy.contains('Test title')
     })
 
-    describe('and several notes exist', function () {
+    describe('and one note exist', function () {
       beforeEach(function () {
         cy.createBlog({
           title: 'Test title',
@@ -82,7 +82,7 @@ describe('Blog app', function () {
     })
   })
 
-  describe.only('When logged in as another user', function () {
+  describe('When logged in as another user', function () {
     beforeEach(function () {
       cy.login({ username: 'mluukkai', password: 'salainen' })
       cy.contains('Matti Luukkainen logged in')
@@ -103,6 +103,38 @@ describe('Blog app', function () {
     it('A blog cannot be deleted by another user', function () {
       cy.contains('.blog', 'Test title').get('#view').click()
       cy.contains('.blog', 'Test title').get('#remove').should('not.exist')
+    })
+  })
+
+  describe.only('When logged in and there are multiple blogs', function () {
+    beforeEach(function () {
+      cy.login({ username: 'mluukkai', password: 'salainen' })
+      cy.contains('Matti Luukkainen logged in')
+
+      cy.createBlog({
+        title: 'Test with most likes',
+        author: 'Test author 1',
+        url: 'Test url 1',
+        likes: 5,
+      })
+      cy.createBlog({
+        title: 'Test with least likes',
+        author: 'Test author 2',
+        url: 'Test url 2',
+        likes: 2,
+      })
+      cy.createBlog({
+        title: 'Test with second most likes',
+        author: 'Test author 3',
+        url: 'Test url 3',
+        likes: 3,
+      })
+    })
+
+    it('blogs are ordered according to likes', function () {
+      cy.get('.blog').eq(0).should('contain', 'Test with most likes')
+      cy.get('.blog').eq(1).should('contain', 'Test with second most likes')
+      cy.get('.blog').eq(2).should('contain', 'Test with least likes')
     })
   })
 })
