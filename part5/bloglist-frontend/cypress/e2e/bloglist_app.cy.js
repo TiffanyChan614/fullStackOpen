@@ -2,7 +2,6 @@ describe('Blog app', function () {
   beforeEach(function () {
     cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
     cy.visit('')
-    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
     const user = {
       name: 'Matti Luukkainen',
       username: 'mluukkai',
@@ -51,6 +50,23 @@ describe('Blog app', function () {
       cy.get('#create').click()
 
       cy.contains('Test title')
+    })
+
+    describe('and several notes exist', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'Test title',
+          author: 'Test author',
+          url: 'Test url',
+          likes: 1,
+        })
+      })
+
+      it('user can like a blog', function () {
+        cy.get('#view').click()
+        cy.get('#like').click()
+        cy.contains('Test title').contains('likes 2')
+      })
     })
   })
 })

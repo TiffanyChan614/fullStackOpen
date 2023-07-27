@@ -21,6 +21,8 @@ const Blog = ({ blog, setBlogs, setMessageInfo }) => {
       likes: blog.likes + 1,
     }
 
+    console.log(updatedBlog)
+
     try {
       const returnedBlog = await blogService.update(blog.id, updatedBlog)
       setBlogs((prevBlogs) =>
@@ -67,7 +69,9 @@ const Blog = ({ blog, setBlogs, setMessageInfo }) => {
       style={blogStyle}
       className='blog'>
       {blog.title} {blog.author}
-      <button onClick={() => setDetailsVisible((prevShow) => !prevShow)}>
+      <button
+        id='view'
+        onClick={() => setDetailsVisible((prevShow) => !prevShow)}>
         {detailsVisible ? 'hide' : 'view'}
       </button>
       <div
@@ -75,7 +79,12 @@ const Blog = ({ blog, setBlogs, setMessageInfo }) => {
         className='details'>
         <div>{blog.url}</div>
         <div>
-          likes {blog.likes} <button onClick={updateLikes}>like</button>
+          likes {blog.likes}{' '}
+          <button
+            id='like'
+            onClick={updateLikes}>
+            like
+          </button>
         </div>
         <div>{blog.user.username}</div>
         <button onClick={removeBlog}>remove</button>

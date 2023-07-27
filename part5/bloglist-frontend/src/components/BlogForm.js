@@ -8,7 +8,6 @@ const BlogForm = ({ blogs, setBlogs, setMessageInfo }) => {
     author: '',
     url: '',
     likes: 0,
-    user: null,
   })
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
@@ -24,9 +23,10 @@ const BlogForm = ({ blogs, setBlogs, setMessageInfo }) => {
     event.preventDefault()
 
     try {
+      console.log('newBlog', newBlog)
       const returnedBlog = await blogService.create(newBlog)
       setBlogs(blogs.concat(returnedBlog))
-      setNewBlog({ title: '', author: '', url: '', likes: 0, user: null })
+      setNewBlog({ title: '', author: '', url: '', likes: 0 })
       setMessageInfo({
         message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
         status: 'success',

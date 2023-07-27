@@ -16,7 +16,7 @@ const App = () => {
     status: null,
   })
 
-  // console.log('user', user)
+  console.log('user', user)
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
