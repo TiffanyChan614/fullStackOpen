@@ -1,13 +1,19 @@
 describe('Blog app', function () {
   beforeEach(function () {
-    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
     cy.visit('')
-    const user = {
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
+    const user1 = {
       name: 'Matti Luukkainen',
       username: 'mluukkai',
       password: 'salainen',
     }
-    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user)
+    const user2 = {
+      name: 'Tiffany Chan',
+      username: 'tiffany',
+      password: '12345678',
+    }
+    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user1)
+    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user2)
   })
 
   it('login form is shown', function () {
@@ -65,14 +71,38 @@ describe('Blog app', function () {
       it('user can like a blog', function () {
         cy.contains('Test title').get('#view').click()
         cy.contains('Test title').get('#like').click()
-        cy.contains('Test title').contains('likes 2')
+        cy.contains('.blog', 'Test title').contains('likes 2')
       })
 
-      it.only('user who created a blog can delete it', function () {
+      it('user who created a blog can delete it', function () {
         cy.contains('Test title').get('#view').click()
         cy.contains('Test title').get('#remove').click()
         cy.contains('.blog', 'Test title').should('not.exist')
       })
+    })
+  })
+
+  describe.only('When logged in as another user', function () {
+    beforeEach(function () {
+      cy.login({ username: 'mluukkai', password: 'salainen' })
+      cy.contains('Matti Luukkainen logged in')
+
+      cy.createBlog({
+        title: 'Test title',
+        author: 'Test author',
+        url: 'Test url',
+        likes: 1,
+      })
+
+      cy.contains('.blog', 'Test title')
+      cy.get('#logout').click()
+      cy.contains('username')
+      cy.login({ username: 'tiffany', password: '12345678' })
+    })
+
+    it('A blog cannot be deleted by another user', function () {
+      cy.contains('.blog', 'Test title').get('#view').click()
+      cy.contains('.blog', 'Test title').get('#remove').should('not.exist')
     })
   })
 })

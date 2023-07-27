@@ -84,7 +84,11 @@ const App = () => {
       {user !== null && (
         <p>
           {user.name} logged in
-          <button onClick={handleLogout}>logout</button>
+          <button
+            id='logout'
+            onClick={handleLogout}>
+            logout
+          </button>
         </p>
       )}
       {user === null ? (
@@ -111,6 +115,7 @@ const App = () => {
               blog={blog}
               setBlogs={setBlogs}
               setMessageInfo={setMessageInfo}
+              user={user}
             />
           ))}
     </div>

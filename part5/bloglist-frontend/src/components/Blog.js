@@ -2,8 +2,13 @@ import { useState } from 'react'
 import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, setBlogs, setMessageInfo }) => {
+const Blog = ({ blog, setBlogs, setMessageInfo, user }) => {
   const [detailsVisible, setDetailsVisible] = useState(false)
+  const [createdByUser, setCreatedByUser] = useState(
+    user.username === blog.user.username
+  )
+  console.log(blog.title, user, blog.user)
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -87,11 +92,13 @@ const Blog = ({ blog, setBlogs, setMessageInfo }) => {
           </button>
         </div>
         <div>{blog.user.username}</div>
-        <button
-          id='remove'
-          onClick={removeBlog}>
-          remove
-        </button>
+        {createdByUser && (
+          <button
+            id='remove'
+            onClick={removeBlog}>
+            remove
+          </button>
+        )}
       </div>
     </div>
   )
