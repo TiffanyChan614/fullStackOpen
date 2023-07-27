@@ -63,9 +63,15 @@ describe('Blog app', function () {
       })
 
       it('user can like a blog', function () {
-        cy.get('#view').click()
-        cy.get('#like').click()
+        cy.contains('Test title').get('#view').click()
+        cy.contains('Test title').get('#like').click()
         cy.contains('Test title').contains('likes 2')
+      })
+
+      it.only('user who created a blog can delete it', function () {
+        cy.contains('Test title').get('#view').click()
+        cy.contains('Test title').get('#remove').click()
+        cy.contains('.blog', 'Test title').should('not.exist')
       })
     })
   })

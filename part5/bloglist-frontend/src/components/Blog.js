@@ -87,7 +87,11 @@ const Blog = ({ blog, setBlogs, setMessageInfo }) => {
           </button>
         </div>
         <div>{blog.user.username}</div>
-        <button onClick={removeBlog}>remove</button>
+        <button
+          id='remove'
+          onClick={removeBlog}>
+          remove
+        </button>
       </div>
     </div>
   )
