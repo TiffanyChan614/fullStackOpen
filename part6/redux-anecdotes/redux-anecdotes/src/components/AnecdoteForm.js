@@ -9,7 +9,7 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
     console.log(asObject(content))
-    dispatch({ type: 'ADD', payload: asObject(content) })
+    dispatch({ type: 'anecdote/createAnecdote', payload: asObject(content) })
   }
 
   return (

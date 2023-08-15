@@ -1,5 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux'
 import VisibilityFilter from './VisibilityFilter'
+import { voteChange } from '../reducers/anecdoteReducer'
+import { notificationChange } from '../reducers/notificationReducer'
 
 const AnecdoteList = () => {
   const anecdotes = useSelector((state) => state.anecdotes)
@@ -12,8 +14,15 @@ const AnecdoteList = () => {
   const dispatch = useDispatch()
 
   const vote = (id) => {
-    console.log('vote', id)
-    dispatch({ type: 'VOTE', payload: { id } })
+    dispatch(voteChange(id))
+    dispatch(
+      notificationChange(
+        `you voted '${anecdotes.find((n) => n.id === id).content}'`
+      )
+    )
+    setTimeout(() => {
+      dispatch(notificationChange(''))
+    }, 5000)
   }
 
   return (
